@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Place Order</h2>
+
+<form method="post">
+    <select name="product_id" id="productSelect" onchange="showQuantity()" required>
+        <option value="">Select Product</option>
+        {% for p in products %}
+        <option value="{{ p[0] }}">{{ p[1] }}</option>
+        {% endfor %}
+    </select>
+
+    <span id="availableQty"></span>
+
+    <input type="number" name="quantity" placeholder="Order quantity" required>
+    <button type="submit">Place Order</button>
+</form>
+
+{% if message %}
+<p class="{{ 'success' if 'successfully' in message else 'error' }}">{{ message }}</p>
+{% endif %}
+
+<script>
+function showQuantity() {
+    const id = document.getElementById("productSelect").value;
+    const label = document.getElementById("availableQty");
+
+    if (!id) {
+        label.innerText = "";
+        return;
+    }
+
+    fetch(`/product/${id}`)
+        .then(res => res.json())
+        .then(data => {
+            label.innerText = "Available: " + data.quantity;
+        });
+}
+</script>
+
+{% endblock %}
